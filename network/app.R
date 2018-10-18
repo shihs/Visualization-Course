@@ -83,22 +83,23 @@ ui <- fluidPage(
   h4("This network plot shows how often customers bought a product(nodes) and how often customers bought two products together(links)"),
   tags$ol(
     tags$li("Select a network node"),
-    tags$li("the bar chart shows how often all other products were bought with the selected product"),
-    tags$li("the datatable below shows the transactions which contain the selected product")
+    tags$li("the bar chart shows how often all other products were bought with the selected products"),
+    tags$li("the datatable below shows the transactions which contain the selected products")
   ),
   
   # fluidRow(
   fixedRow(
     column(
       # network
-      width = 7, visNetworkOutput("network", height = "600px")
+      width = 7, visNetworkOutput("network", height = "600px", width = "700px")
     ),
     column(
       # barchart
-      width = 5, plotlyOutput(outputId = "barchart", height = "600px")
+      width = 5, plotlyOutput(outputId = "barchart", height = "600px", width = "500px")
     )
   ),
   
+  # click result test
   # verbatimTextOutput("zoom"),
   
   fixedRow(
@@ -122,36 +123,41 @@ server <- function(input, output) {
       visGroups(groupname = "B", color = list(background = "#EEE8AA", border = "#808080",
                                               highlight = "#FFD700", hover = "#FFD700")) %>%
       visInteraction(multiselect = T) %>% 
+      # click event
       visEvents(
-        # click = "function(nodes){
-        #         Shiny.onInputChange('click', nodes);
-        #         ;}")
-        click = "function(nodes) {
-        console.info('click')
-        console.info(nodes)
-        Shiny.onInputChange('click', {nodes : nodes.nodes, links : nodes.links});
-        ;}")
-    
-})
+            click = "function(nodes){
+                    Shiny.onInputChange('click', nodes);
+                    ;}")
+        # click = "function(nodes) {
+        # console.info('click')
+        # console.info(nodes)
+        # Shiny.onInputChange('click', {nodes : nodes.nodes, links : nodes.links});
+        # ;}")
+  })
   
   # barchart
   output$barchart <- renderPlotly({
     col <- rep("#C0C0C0", 16)
     
     if (!is.null(input$click$nodes) &&  length(input$click$nodes) != 0) {
-      # col <- rep("#EEE8AA", 16)
-      i <- which(nodes$label == input$click$nodes[[1]])
-      show <- product_customer[which(product_customer[, i] != 0), -1]
+      # which products are choosen
+      i <- which(names(product_customer) %in% unlist(input$click$nodes))
+      # which rows have selected products
+      if (length(i) == 1) {  # selected one product
+        j <- which(product_customer[, i] != 0)
+      } else {  # selected multiple products
+        j <- which(rowSums(product_customer[, i]) != 0)
+      }
+      show <- product_customer[j, -1]
       show <- colSums(show)
       show <- data.frame(show)
       show$label <- rownames(show)
-      col[i] <- "#FFD700" # select color
+      col[i-1] <- "#FFD700" # color selected products
       plot_ly(show, x = ~label, y = ~show,
               name = "Amount", type = "bar",
               marker = list(color = col)) %>%
         layout(xaxis = list(title = "Products"), yaxis = list(title = "Amount"))
     } else {
-      # col <- rep("#C0C0C0", 16)
       plot_ly(nodes, x = ~label, y = ~products_amount,
               name = "Amount", type = "bar",
               marker = list(color = col)) %>%
@@ -163,7 +169,7 @@ server <- function(input, output) {
   # Print the selected node name
   output$table_text <- renderText({
     if (!is.null(input$click$nodes) &&  length(input$click$nodes) != 0) {
-      HTML(" You've selected <code>", input$click$nodes[[1]], "</code>",
+      HTML(" You've selected <b>", paste(unlist(input$click$nodes), collapse = " ,"), "</b>",
            " <br><br>Here are the transactions that ",
            " contain ", input$click$nodes[[1]], ":")
     }
@@ -176,21 +182,22 @@ server <- function(input, output) {
   output$table <- renderDataTable({
     
     if (!is.null(input$click$nodes) && length(input$click$nodes) != 0) {
-      col <- which(names(product_customer) == input$click$nodes[[1]])
-      show <- product_customer[which(product_customer[, col] != 0), ]
-      show[, c(1, col, setdiff(2:ncol(product_customer), col))]
+      # which products are choosen
+      i <- which(names(product_customer) %in% unlist(input$click$nodes))
+      show <- product_customer[which(product_customer[, i] != 0), ]
+      show[, c(1, i, setdiff(2:ncol(product_customer), i))]
     } else {
       data.frame()
     }
     
   })
   
+  # click result test
   # output$zoom <- renderPrint({
-  #   !is.null(input$click$nodes) && length(input$click$nodes) != 0
+  #   # !is.null(input$click$nodes) && length(input$click$nodes) != 0
+  #   unlist(input$click$nodes)
   # })
-  
-  
-  }
+}
 
 
 
