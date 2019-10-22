@@ -17,14 +17,14 @@ Examples
 
 Here are some examples that you can see from shinyapp.io
 
-##### [eventdata](https://shihs.shinyapps.io/Special_Task_1/): Denstiy plots with interaction. Code is [here](https://github.com/shihs/Visualization-Course/tree/master/eventdata)
+##### 1. [eventdata](https://shihs.shinyapps.io/Special_Task_1/): Denstiy plots with interaction. Code is [here](https://github.com/shihs/Visualization-Course/tree/master/eventdata)
 
 <img src="pic/eventdata.png" width="600" />
 
-##### [map](https://shihs.shinyapps.io/Special_Task_2/): Zoom in a map. Code is [here](https://github.com/shihs/Visualization-Course/tree/master/map)
+##### 2. [map](https://shihs.shinyapps.io/Special_Task_2/): Zoom in a map. Code is [here](https://github.com/shihs/Visualization-Course/tree/master/map)
 
 <img src="pic/map.png" width="600" />
 
-##### [network](https://shihs.shinyapps.io/Special_Task_3/): Network interactive plots. Code is [here](https://github.com/shihs/Visualization-Course/tree/master/network)
+##### 3. [network](https://shihs.shinyapps.io/Special_Task_3/): Network interactive plots. Code is [here](https://github.com/shihs/Visualization-Course/tree/master/network)
 
 <img src="pic/network.png" width="600" />
